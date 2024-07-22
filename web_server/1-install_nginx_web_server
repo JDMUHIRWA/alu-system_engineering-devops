@@ -1,31 +1,32 @@
 #!/usr/bin/env bash
-# This script installs nginx on a remote server and configures it
+# Configures a new ubuntu machine by installing
+# Nginx where it should be listening on port 80
+# Serve a page that would return a Hello World string
+#
 
-# Update package list and install nginx
-sudo apt update && sudo apt install nginx -y
+echo -e "Updating and installing Nginx.\n"
+sudo apt-get update -y -qq && \
+	 sudo apt-get install nginx -y
 
-# Check if the installation was successful
-if [ $? -ne 0 ]; then
-  echo "Nginx installation failed"
-  exit 1
-fi
+echo -e "\nSetting up some minor stuff.\n"
 
-# Create index.html file and write "Holberton School" to it
-echo "Holberton School" | sudo tee /var/www/html/index.html
+# starting nginx service
+sudo service nginx start
 
-# Check if the file was created successfully
-if [ $? -ne 0 ]; then
-  echo "Failed to create index.html"
-  exit 1
-fi
+# allowing nginx on firewall
+sudo ufw allow 'Nginx HTTP'
 
-# Restart the nginx service
+# Give the user ownership to website files for easy editing
+sudo chown -R "$USER":"$USER" /var/www/html
+sudo chmod -R 755 /var/www
+
+# Backup default index
+cp /var/www/html/index.nginx-debian.html /var/www/html/index.nginx-debian.html.bckp
+
+# Creating new index
+echo -e "Holberton School" | dd status=none of=/var/www/html/index.nginx-debian.html
+
+# Restarting nginx
 sudo service nginx restart
 
-# Check if nginx restarted successfully
-if [ $? -ne 0 ]; then
-  echo "Failed to restart nginx"
-  exit 1
-fi
-
-echo "Nginx has been installed and configured successfully."
+echo -e "\nCompleted. ✅\n"
