@@ -1,8 +1,31 @@
-
 #!/usr/bin/env bash
-# installs nginx on a remote server and configures it
-sudo apt update
-sudo apt install nginx -y
-sudo touch /var/www/html/index.html
+# This script installs nginx on a remote server and configures it
+
+# Update package list and install nginx
+sudo apt update && sudo apt install nginx -y
+
+# Check if the installation was successful
+if [ $? -ne 0 ]; then
+  echo "Nginx installation failed"
+  exit 1
+fi
+
+# Create index.html file and write "Holberton School" to it
 echo "Holberton School" | sudo tee /var/www/html/index.html
+
+# Check if the file was created successfully
+if [ $? -ne 0 ]; then
+  echo "Failed to create index.html"
+  exit 1
+fi
+
+# Restart the nginx service
 sudo service nginx restart
+
+# Check if nginx restarted successfully
+if [ $? -ne 0 ]; then
+  echo "Failed to restart nginx"
+  exit 1
+fi
+
+echo "Nginx has been installed and configured successfully."
